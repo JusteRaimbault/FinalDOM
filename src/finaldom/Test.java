@@ -4,12 +4,18 @@
 package finaldom;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.ContextFactory;
+import org.mozilla.javascript.tools.shell.Global;
+import org.mozilla.javascript.tools.shell.Main;
 
 /**
  * @author Raimbault Juste <br/> <a href="mailto:juste.raimbault@polytechnique.edu">juste.raimbault@polytechnique.edu</a>
@@ -26,10 +32,10 @@ public class Test {
 		JSRunner.init();
 		Log.setDebugMode(true);
 		
-		testJSRunner();
+		//testJSRunner();
 		//printFromURL("https://www.facebook.com");
 		//testExecuteScript();
-		//testload();
+		testload();
 		
 	}
 	
@@ -37,9 +43,24 @@ public class Test {
 	
 	
 	public static void testload(){
-		//JSRunner.loadLibrary("js/test.js");
+		//JSRunner.loadLibrary("js/env.rhino.1.2.js");
 		//System.out.println(JSRunner.runCommand("f(7);"));	
-		JSRunner.loadScriptFromURL("https://fbstatic-a.akamaihd.net/rsrc.php/v2/yL/r/ut2d0ouCEt9.js");
+		//JSRunner.loadScriptFromURL("https://fbstatic-a.akamaihd.net/rsrc.php/v2/yL/r/ut2d0ouCEt9.js");
+		
+
+		Context cx = ContextFactory.getGlobal().enterContext();
+		cx.setOptimizationLevel(-1);
+		cx.setLanguageVersion(Context.VERSION_1_5);
+		Global global = Main.getGlobal();
+		global.init(cx);
+		try {
+			Main.processSource(cx, "js/env.rhino.1.2.js");
+			Main.processSource(cx, "js/jquery-1.9.1.js");
+			cx.evaluateString(global, "window.location=\"https://www.facebook.com\";console.log($(document.body).html())", "log/text.log", 1, null);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 	}
 	
 	
