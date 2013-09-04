@@ -22,30 +22,49 @@ public class Test {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		//testJSRunner();
+		//always init the context first
+		JSRunner.init();
+		Log.setDebugMode(true);
+		
+		testJSRunner();
 		//printFromURL("https://www.facebook.com");
-		testExecuteScript();
+		//testExecuteScript();
+		//testload();
+		
 	}
 	
 	
 	
 	
+	public static void testload(){
+		//JSRunner.loadLibrary("js/test.js");
+		//System.out.println(JSRunner.runCommand("f(7);"));	
+		JSRunner.loadScriptFromURL("https://fbstatic-a.akamaihd.net/rsrc.php/v2/yL/r/ut2d0ouCEt9.js");
+	}
 	
 	
 	public static void testExecuteScript(){
 		Document doc = getDOMFromURL("https://www.facebook.com");
 		//System.out.println(doc);
+		
 		for(Element e: doc.getElementsByTag("script")){
-			System.out.println(e.html());
+			
+			System.out.println(e);
+			
+			String libpath = e.attr("src");
+			Log.debug(libpath);
+			if (libpath.length()>0){JSRunner.loadScriptFromURL(libpath);}
+			//else{JSRunner.runCommand(e.html());}
+			
 			//first test script embedded in the page and not from external sources
 			//if(e.html().length()>1){System.out.println(JSRunner.runCommand(e.html()));break;}
+			
 		}
-		System.out.println(JSRunner.runCommand(""));
 	}
 	
 
 	public static void testJSRunner(){
-		System.out.println(JSRunner.runCommand("function f(x){return x+Math.PI+\"SALETOS\"} f(7)"));	
+		System.out.println(JSRunner.runCommand("alert(\"TOS\")"));	
 	}
 	
 	
